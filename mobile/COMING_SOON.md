@@ -1,31 +1,24 @@
 # 📱 Inkflow Mobile — Coming Soon
 
-> Native iOS and Android apps for Inkflow are on the roadmap.
-
-## Status
-
-| Platform | Status |
-|----------|--------|
-| 🍎 iOS (App Store) | 🔜 Coming Soon |
-| 🤖 Android (Google Play) | 🔜 Coming Soon |
-
-## What to expect
-
-The mobile apps will bring the full Inkflow experience to your pocket:
-
-- **Biometric login** — Face ID / fingerprint instead of email
-- **Push notifications** — Liquidation alerts, yield changes, swap confirmations
-- **Native wallet UX** — Optimised embedded wallet for mobile
-- **All features** — Same AI chat, same DeFi protocols, same gasless transactions
+Native iOS and Android apps for Inkflow are on the roadmap.
 
 ## Timeline
 
-Web app ships first. Mobile follows after we hit our first 1,000 active users.
+- ✅ **Phase 1** — Web app (current)
+- 🔄 **Phase 2** — Progressive Web App (PWA) optimisation
+- 📱 **Phase 3** — React Native app (iOS + Android)
 
-## Want early mobile access?
+## Planned Features
 
-Join the waitlist at [inkflow.app](https://inkflow.app) and select "Notify me for mobile."
+Everything from the web app, plus:
+- Biometric authentication (Face ID / fingerprint)
+- Push notifications for price alerts and liquidation warnings
+- Native camera for QR code payments
+- Widget support (portfolio balance on home screen)
 
----
+## Get Notified
 
-Built on Inkonchain · Powered by Claude AI
+Star this repo and watch for releases to be first to know when the mobile apps drop.
+
+[![App Store](https://img.shields.io/badge/App%20Store-Coming%20Soon-7B5FFF?style=flat-square&logo=apple)]()
+[![Google Play](https://img.shields.io/badge/Google%20Play-Coming%20Soon-B46EFF?style=flat-square&logo=google-play)]()

@@ -1,71 +1,66 @@
-# Inkflow 🟣
+# 🟣 Inkflow
 
-> **AI-powered DeFi onboarding on Inkonchain.**
-> Swap, earn, and borrow through natural conversation. No seed phrases. No gas confusion.
+> AI-powered DeFi onboarding for the next billion users — built on [Inkonchain](https://inkonchain.com).
 
 [![Built on Inkonchain](https://img.shields.io/badge/Built%20on-Inkonchain-7B5FFF?style=flat-square)](https://inkonchain.com)
-[![Powered by Claude](https://img.shields.io/badge/Powered%20by-Claude%20AI-B46EFF?style=flat-square)](https://anthropic.com)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square)](https://nextjs.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-white?style=flat-square)](LICENSE)
+[![Powered by Claude](https://img.shields.io/badge/AI-Claude%20API-B46EFF?style=flat-square)](https://anthropic.com)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square)](https://nextjs.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-purple?style=flat-square)](LICENSE)
+
+---
+
+## 📱 Mobile Apps — Coming Soon
+
+> Native iOS and Android apps are on the roadmap. The web app ships first.
+
+[![App Store](https://img.shields.io/badge/App%20Store-Coming%20Soon-7B5FFF?style=flat-square&logo=apple)](./mobile/COMING_SOON.md)
+[![Google Play](https://img.shields.io/badge/Google%20Play-Coming%20Soon-B46EFF?style=flat-square&logo=google-play)](./mobile/COMING_SOON.md)
 
 ---
 
 ## What is Inkflow?
 
-Inkflow is the consumer-grade front door to DeFi on Inkonchain — Kraken's Layer 2 blockchain built on the OP Superchain.
+Inkflow is a consumer-grade onboarding layer that sits on top of Ink's DeFi protocols. It lets anyone — including total crypto beginners — interact with DeFi through:
 
-Most DeFi products assume users already know what a seed phrase is, how gas works, and which protocol to pick. Inkflow assumes none of that. Instead, users type what they want in plain English and the AI handles everything: protocol selection, transaction construction, gas abstraction, and plain-English explanation before every confirmation.
-
-**Target user:** A Kraken user who has heard of DeFi but has never touched it.
-
----
-
-## Features
-
-- **Email & social login** — No seed phrases. ZeroDev creates a smart wallet silently on first login.
-- **Natural language DeFi** — "Swap $50 of ETH to USDC" or "Earn yield on my ETH" — Claude AI parses intent and executes.
-- **Gasless transactions** — ERC-4337 paymasters absorb gas for new users. They never see a gas prompt.
-- **Pre-flight explanations** — Every transaction explained in plain English before confirmation.
-- **Risk dashboard** — Live liquidation risk, portfolio exposure, and yield comparisons.
-- **Flexible fiat on-ramp** — Kraken, bank card, or Nigerian virtual dollar cards (Kuda, Grey, Geegpay) via Paystack and Flutterwave.
+- 💬 **Natural language** — "swap $50 of ETH to USDC" just works
+- 🔐 **Embedded wallets** — sign up with email or Google, no seed phrase
+- ⚡ **Gasless transactions** — ERC-4337 paymasters handle gas silently
+- 🔍 **Pre-flight explanations** — plain English before every transaction
+- 📊 **Risk dashboard** — live liquidation risk, yield comparisons, portfolio exposure
+- 🌍 **African payment support** — Paystack + Flutterwave (Nigerian virtual cards, bank transfer, mobile money)
 
 ---
 
 ## Tech Stack
 
-### Chain & Infrastructure
-| Tool | Role |
-|------|------|
-| [Inkonchain](https://inkonchain.com) | L2 chain (OP Superchain, Kraken) |
-| [ZeroDev](https://zerodev.app) | ERC-4337 smart accounts + paymasters |
-| [Alchemy Account Kit](https://accountkit.alchemy.com) | Account abstraction SDK |
-| [Safe](https://safe.global) | Smart account fallback |
+### Core
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS + shadcn/ui |
+| Package Manager | pnpm |
 
-### DeFi Protocols (live on Ink)
-| Protocol | Role |
-|----------|------|
-| SuperSwap v3 | Token swaps |
-| Velodrome | LP positions & yield |
-| Aave / Tydro | Lending & borrowing |
+### Blockchain
+| Layer | Technology |
+|-------|-----------|
+| Chain | Inkonchain (OP Superchain L2) |
+| Account Abstraction | ZeroDev (ERC-4337) |
+| Alt AA providers | Alchemy Account Kit, Safe |
+| Onchain clients | Viem + Wagmi |
+| Protocols | SuperSwap v3, Velodrome, Aave/Tydro |
 
 ### AI
-| Tool | Role |
-|------|------|
-| [Claude API](https://anthropic.com) | Natural language intent parsing & explanation |
+| Layer | Technology |
+|-------|-----------|
+| LLM | Claude API (claude-sonnet-4-20250514) |
+| Intent parsing | Server-side API route |
 
 ### Payments
-| Tool | Role |
-|------|------|
-| [Paystack](https://paystack.com) | Primary — Nigerian cards, bank transfer, USSD, BVN |
-| [Flutterwave](https://flutterwave.com) | Secondary — broader Africa, mobile money (MPesa, Airtel) |
-
-### Frontend
-| Tool | Role |
-|------|------|
-| Next.js 14 | App framework |
-| Tailwind CSS | Styling |
-| shadcn/ui | UI components |
-| Viem + Wagmi | Blockchain client |
+| Provider | Coverage |
+|----------|----------|
+| Paystack | Nigeria — cards, bank transfer, virtual cards, BVN verify |
+| Flutterwave | Pan-Africa — mobile money, Mpesa, Airtel, broader card support |
 
 ---
 
@@ -75,25 +70,30 @@ Most DeFi products assume users already know what a seed phrase is, how gas work
 inkflow/
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx                  # Main app UI
-│   │   ├── layout.tsx                # Root layout + metadata
-│   │   ├── globals.css               # Global styles
-│   │   └── api/
-│   │       ├── chat/route.ts         # Claude AI intent parsing
-│   │       ├── paystack/route.ts     # Paystack init + verify
-│   │       └── flutterwave/route.ts  # Flutterwave init + verify
+│   │   ├── api/
+│   │   │   ├── chat/          # Claude AI intent parsing
+│   │   │   ├── paystack/      # Paystack payment routes
+│   │   │   └── flutterwave/   # Flutterwave payment routes
+│   │   ├── dashboard/         # Main user dashboard
+│   │   └── onboard/           # Onboarding flow
 │   ├── components/
-│   │   ├── Chat.tsx                  # AI chat interface
-│   │   ├── Navbar.tsx                # Top navigation
-│   │   └── Sidebar.tsx               # Portfolio + quick actions
-│   └── lib/
-│       ├── zerodev.ts                # Smart wallet setup
-│       ├── paystack.ts               # Paystack client helpers
-│       └── flutterwave.ts            # Flutterwave client helpers
+│   │   ├── ui/                # shadcn/ui base components
+│   │   ├── wallet/            # Wallet + balance components
+│   │   ├── chat/              # AI chat interface
+│   │   └── layout/            # Nav, footer, shell
+│   ├── lib/
+│   │   ├── paystack/          # Paystack SDK wrapper
+│   │   ├── flutterwave/       # Flutterwave SDK wrapper
+│   │   ├── zerodev/           # ZeroDev wallet setup
+│   │   └── claude/            # Claude API client
+│   ├── hooks/                 # Custom React hooks
+│   ├── types/                 # TypeScript type definitions
+│   └── styles/                # Global styles
 ├── mobile/
-│   └── COMING_SOON.md               # iOS + Android roadmap
-├── .env.example                      # All required env vars
-└── README.md
+│   └── COMING_SOON.md         # Mobile app roadmap
+├── docs/
+│   └── ARCHITECTURE.md        # System architecture
+└── public/                    # Static assets
 ```
 
 ---
@@ -101,125 +101,67 @@ inkflow/
 ## Getting Started
 
 ### Prerequisites
-
-- Node.js 18+
+- Node.js 20+
 - pnpm (`npm install -g pnpm`)
-- A [ZeroDev](https://dashboard.zerodev.app) project ID
-- An [Anthropic](https://console.anthropic.com) API key
-- A [Paystack](https://dashboard.paystack.com) account
-- A [Flutterwave](https://dashboard.flutterwave.com) account
+- A [Inkonchain](https://docs.inkonchain.com) RPC endpoint
+- [ZeroDev](https://zerodev.app) project ID
+- [Claude API](https://anthropic.com) key
+- [Paystack](https://paystack.com) secret key
+- [Flutterwave](https://flutterwave.com) secret key
 
 ### 1. Clone the repo
 
-```powershell
+```bash
 git clone https://github.com/YOUR_USERNAME/inkflow.git
 cd inkflow
 ```
 
 ### 2. Install dependencies
 
-```powershell
+```bash
 pnpm install
 ```
 
 ### 3. Set up environment variables
 
-```powershell
-Copy-Item .env.example .env.local
+```bash
+cp .env.example .env.local
 ```
 
-Then open `.env.local` in Cursor and fill in all the values. See `.env.example` for every key needed.
+Fill in your keys in `.env.local` (see `.env.example` for all required variables).
 
 ### 4. Run the development server
 
-```powershell
+```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
 ## Environment Variables
 
-All required variables are documented in `.env.example`. Key ones:
-
-| Variable | Where to get it |
-|----------|----------------|
-| `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) |
-| `ZERODEV_PROJECT_ID` | [dashboard.zerodev.app](https://dashboard.zerodev.app) |
-| `ALCHEMY_API_KEY` | [dashboard.alchemy.com](https://dashboard.alchemy.com) |
-| `PAYSTACK_SECRET_KEY` | [dashboard.paystack.com](https://dashboard.paystack.com) |
-| `FLUTTERWAVE_SECRET_KEY` | [dashboard.flutterwave.com](https://dashboard.flutterwave.com) |
-
-> **Never commit `.env.local` to GitHub.** It is already in `.gitignore`.
-
----
-
-## Payment Integration
-
-### Paystack (Primary — Nigeria first)
-- Supports: cards, bank transfer, USSD, virtual cards, Apple Pay
-- Nigerian virtual dollar cards that work: Kuda, Grey, Geegpay, Barter, Chipper Cash
-- BVN verification available for added trust
-- Test keys are sandboxed — no real money moves in dev
-
-### Flutterwave (Secondary — broader Africa)
-- Supports: cards, bank transfer, mobile money (MPesa, Airtel), USSD, Barter
-- Covers 34+ African countries
-- Use v3 API to start (v4 migration path documented in their docs)
-
-### Payment flow
-```
-User taps "Add Funds"
-  → Choose Paystack (NGN) or Flutterwave (other currencies)
-  → Backend initializes transaction
-  → User completes payment on checkout page
-  → Webhook confirms success
-  → USDC/ETH routed to ZeroDev wallet on Ink  ← TODO: bridge integration
-```
-
----
-
-## Mobile Apps
-
-iOS and Android apps are on the roadmap. See [`mobile/COMING_SOON.md`](mobile/COMING_SOON.md) for details.
-
-| Platform | Status |
-|----------|--------|
-| 🍎 App Store | 🔜 Coming Soon |
-| 🤖 Google Play | 🔜 Coming Soon |
-
----
-
-## Inkonchain Ecosystem
-
-Inkflow is eligible for Inkonchain builder grants. Three programs to know:
-
-- **Spark** — early-stage project funding
-- **Forge** — growth-stage protocol support  
-- **Echo** — ecosystem amplification
-
-Apply at [inkonchain.com/builders](https://inkonchain.com/builders).
+See [`.env.example`](.env.example) for the full list. Never commit your `.env.local`.
 
 ---
 
 ## Contributing
 
-Contributions are welcome. Please open an issue before submitting a PR so we can discuss the change.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-1. Fork the repo
-2. Create a branch: `git checkout -b feat/your-feature`
-3. Commit: `git commit -m "feat: your feature"`
-4. Push: `git push origin feat/your-feature`
-5. Open a pull request
+---
+
+## Ink Builder Program
+
+Inkflow is being built as part of the [Ink Builder Program](https://docs.inkonchain.com/ink-builder-program/overview). If you're building on Ink too, check out:
+
+- [Spark Program](https://docs.inkonchain.com/ink-builder-program/spark-program) — early-stage grants
+- [Forge Program](https://docs.inkonchain.com/ink-builder-program/forge-program) — growth grants
+- [Office Hours](https://docs.inkonchain.com/ink-builder-program/office-hours) — direct Ink team support
 
 ---
 
 ## License
 
 MIT © 2026 Inkflow
-
----
-
-Built on [Inkonchain](https://inkonchain.com) · Powered by [Claude AI](https://anthropic.com) · Part of the OP Superchain
