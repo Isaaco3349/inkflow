@@ -1,6 +1,12 @@
+import type { Viewport } from 'next'
 import Chat from '@/components/Chat'
 import Navbar from '@/components/Navbar'
 import Sidebar from '@/components/Sidebar'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
 
 export default function Home() {
   return (

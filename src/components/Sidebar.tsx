@@ -16,16 +16,17 @@ const YIELD_DATA = [
 
 export default function Sidebar() {
   function handleQuickAction(prompt: string) {
-    // Dispatch custom event to Chat component
     window.dispatchEvent(new CustomEvent('inkflow:prompt', { detail: prompt }))
+    // also auto-submit
+    window.dispatchEvent(new CustomEvent('inkflow:submit', { detail: prompt }))
   }
 
   return (
-    <aside className="w-72 border-r border-[rgba(123,95,255,0.18)] bg-[#0E0B1C] flex flex-col hidden md:flex">
+    <aside className="w-64 shrink-0 border-r border-[rgba(123,95,255,0.18)] bg-[#0E0B1C] flex flex-col">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-[rgba(123,95,255,0.18)]">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-[#7B5FFF] flex items-center justify-center">
+          <div className="w-6 h-6 rounded-md bg-[#7B5FFF] flex items-center justify-center shadow-[0_0_12px_rgba(123,95,255,0.4)]">
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
               <path d="M3 7C3 4.79 4.79 3 7 3s4 1.79 4 4-1.79 4-4 4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/>
               <circle cx="7" cy="7" r="1.5" fill="#fff"/>
@@ -41,7 +42,7 @@ export default function Sidebar() {
           Portfolio
         </div>
         <div className="text-2xl font-bold text-[#EDE9FF] tracking-tight">$2,847.50</div>
-        <div className="text-[11px] text-[#B46EFF] mt-1">↑ +$124.30 today · 4.6% avg APY</div>
+        <div className="text-[11px] text-[#B46EFF] mt-1">+$124.30 today · 4.6% avg APY</div>
       </div>
 
       {/* Quick actions */}

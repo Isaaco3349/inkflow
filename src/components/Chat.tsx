@@ -27,13 +27,19 @@ export default function Chat() {
   useEffect(() => {
     function handlePrompt(e: Event) {
       const prompt = (e as CustomEvent<string>).detail
-      if (prompt) {
-        setInput(prompt)
-      }
+      if (prompt) setInput(prompt)
+    }
+    function handleSubmit(e: Event) {
+      const prompt = (e as CustomEvent<string>).detail
+      if (prompt) sendMessage(prompt)
     }
     window.addEventListener('inkflow:prompt', handlePrompt)
-    return () => window.removeEventListener('inkflow:prompt', handlePrompt)
-  }, [])
+    window.addEventListener('inkflow:submit', handleSubmit)
+    return () => {
+      window.removeEventListener('inkflow:prompt', handlePrompt)
+      window.removeEventListener('inkflow:submit', handleSubmit)
+    }
+  }, [messages, loading])
 
   async function sendMessage(overrideInput?: string) {
     const trimmed = (overrideInput ?? input).trim()
@@ -51,14 +57,19 @@ export default function Chat() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: history.filter((m) => m.role !== 'assistant' || m !== WELCOME_MESSAGE),
+          message: trimmed,
+          history: messages
+            .filter((m) => m !== WELCOME_MESSAGE)
+            .map((m) => ({ role: m.role, content: m.content })),
         }),
       })
 
       const data = await res.json()
 
-      if (data.message) {
-        setMessages([...history, { role: 'assistant', content: data.message }])
+      if (data.explanation) {
+        setMessages([...history, { role: 'assistant', content: data.explanation }])
+      } else if (data.error) {
+        setMessages([...history, { role: 'assistant', content: `Error: ${data.error}` }])
       }
     } catch {
       setMessages([
