@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg:        #07050F;
+  --bg-1:      #0E0B1C;
+  --bg-2:      #150F28;
+  --purple:    #7B5FFF;
+  --purple-hi: #9B83FF;
+  --violet:    #B46EFF;
+  --text:      #EDE9FF;
+  --muted:     rgba(237,233,255,0.45);
+  --border:    rgba(123,95,255,0.18);
+  --border-hi: rgba(123,95,255,0.35);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
