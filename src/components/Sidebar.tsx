@@ -1,5 +1,24 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import { createPublicClient, http, formatEther } from 'viem'
+
+const inkChain = {
+  id: 57073,
+  name: 'Ink',
+  network: 'ink',
+  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  rpcUrls: {
+    default: { http: [process.env.NEXT_PUBLIC_INK_RPC_URL || 'https://rpc-gel.inkonchain.com'] },
+    public: { http: [process.env.NEXT_PUBLIC_INK_RPC_URL || 'https://rpc-gel.inkonchain.com'] },
+  },
+} as const
+
+const publicClient = createPublicClient({
+  chain: inkChain as any,
+  transport: http(),
+})
+
 const QUICK_ACTIONS = [
   { label: 'Swap tokens', prompt: 'swap $50 of ETH to USDC' },
   { label: 'Earn yield', prompt: 'earn yield on my USDC' },
@@ -15,9 +34,57 @@ const YIELD_DATA = [
 ]
 
 export default function Sidebar() {
+  const [address, setAddress] = useState<string | null>(null)
+  const [ethBalance, setEthBalance] = useState<string | null>(null)
+  const [ethPrice, setEthPrice] = useState<number>(3500)
+  const [loading, setLoading] = useState(false)
+
+  // Listen for wallet connection from Navbar
+  useEffect(() => {
+    function handleWalletConnected(e: Event) {
+      const addr = (e as CustomEvent<string>).detail
+      setAddress(addr)
+    }
+    function handleWalletDisconnected() {
+      setAddress(null)
+      setEthBalance(null)
+    }
+    window.addEventListener('inkflow:wallet:connected', handleWalletConnected)
+    window.addEventListener('inkflow:wallet:disconnected', handleWalletDisconnected)
+    return () => {
+      window.removeEventListener('inkflow:wallet:connected', handleWalletConnected)
+      window.removeEventListener('inkflow:wallet:disconnected', handleWalletDisconnected)
+    }
+  }, [])
+
+  // Fetch real ETH balance when address changes
+  useEffect(() => {
+    if (!address) return
+    setLoading(true)
+    publicClient
+      .getBalance({ address: address as `0x${string}` })
+      .then((bal) => {
+        const eth = parseFloat(formatEther(bal)).toFixed(4)
+        setEthBalance(eth)
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false))
+  }, [address])
+
+  // Fetch live ETH price
+  useEffect(() => {
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
+      .then((r) => r.json())
+      .then((d) => setEthPrice(d?.ethereum?.usd ?? 3500))
+      .catch(() => setEthPrice(3500))
+  }, [])
+
+  const usdValue = ethBalance
+    ? (parseFloat(ethBalance) * ethPrice).toFixed(2)
+    : null
+
   function handleQuickAction(prompt: string) {
     window.dispatchEvent(new CustomEvent('inkflow:prompt', { detail: prompt }))
-    // also auto-submit
     window.dispatchEvent(new CustomEvent('inkflow:submit', { detail: prompt }))
   }
 
@@ -41,8 +108,27 @@ export default function Sidebar() {
         <div className="text-[9px] tracking-widest uppercase text-[rgba(237,233,255,0.3)] mb-3">
           Portfolio
         </div>
-        <div className="text-2xl font-bold text-[#EDE9FF] tracking-tight">$2,847.50</div>
-        <div className="text-[11px] text-[#B46EFF] mt-1">+$124.30 today · 4.6% avg APY</div>
+        {loading ? (
+          <div className="text-[#B46EFF] text-xs animate-pulse">Loading balance...</div>
+        ) : address && usdValue ? (
+          <>
+            <div className="text-2xl font-bold text-[#EDE9FF] tracking-tight">
+              ${usdValue}
+            </div>
+            <div className="text-[11px] text-[#B46EFF] mt-1">
+              {ethBalance} ETH · Live on Ink
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="text-2xl font-bold text-[rgba(237,233,255,0.3)] tracking-tight">
+              $0.00
+            </div>
+            <div className="text-[11px] text-[rgba(237,233,255,0.3)] mt-1">
+              Connect wallet to see balance
+            </div>
+          </>
+        )}
       </div>
 
       {/* Quick actions */}
