@@ -7,13 +7,14 @@ export default function Navbar() {
   const [address, setAddress] = useState<string | null>(null)
 
   async function connectWallet() {
-    if (typeof window === 'undefined' || !window.ethereum) {
+    if (typeof window === 'undefined' || !(window as Window & { ethereum?: unknown }).ethereum) {
       alert('No wallet detected. Please install MetaMask or a Web3 wallet.')
       return
     }
 
     try {
-      const accounts: string[] = await window.ethereum.request({ method: 'eth_requestAccounts' })
+      const eth = (window as Window & { ethereum?: { request: (args: { method: string }) => Promise<string[]> } }).ethereum
+const accounts: string[] = await eth!.request({ method: 'eth_requestAccounts' })
       if (accounts.length > 0) {
         setAddress(accounts[0])
         setConnected(true)
