@@ -69,10 +69,6 @@ export async function createGaslessClient(privateKey: `0x${string}`) {
   const paymasterClient = createZeroDevPaymasterClient({
     chain: inkMainnet,
     transport: http(process.env.ZERODEV_PAYMASTER_RPC),
-    entryPoint: {
-      address: '0x0000000071727De22E5E9d8BAf0edAc6f37da032' as Address,
-      version: '0.7',
-    },
   })
 
   const kernelClient = createKernelAccountClient({
