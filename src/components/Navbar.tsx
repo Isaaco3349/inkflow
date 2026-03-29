@@ -56,10 +56,10 @@ const accounts: string[] = await eth!.request({ method: 'eth_requestAccounts' })
         </div>
 
         <button
-          onClick={connectWallet}
-          className="text-xs font-bold px-3 sm:px-4 py-2 rounded-lg bg-[#7B5FFF] text-white hover:bg-[#9B83FF] transition-colors shadow-[0_4px_16px_rgba(123,95,255,0.4)] whitespace-nowrap"
-        >
-          {connected ? 'Connected' : 'Connect wallet'}
+            onClick={connected ? () => { setConnected(false); setAddress(null) } : connectWallet}
+            className="text-xs font-bold px-3 sm:px-4 py-2 rounded-lg bg-[#7B5FFF] text-white hover:bg-[#9B83FF] transition-colors shadow-[0_4px_16px_rgba(123,95,255,0.4)] whitespace-nowrap"
+          >
+            {connected ? 'Disconnect' : 'Connect wallet'}
         </button>
       </div>
     </header>
