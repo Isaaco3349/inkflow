@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Syne, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
@@ -13,6 +13,12 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ['300', '400'],
   variable: '--font-mono',
 })
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+}
 
 export const metadata: Metadata = {
   title: 'Inkflow - DeFi that speaks your language',
@@ -38,8 +44,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${syne.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className="h-full overflow-hidden">
+      <body
+        className={`${syne.variable} ${jetbrainsMono.variable} h-full overflow-hidden bg-[#07050F]`}
+      >
         {children}
       </body>
     </html>
