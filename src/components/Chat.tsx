@@ -23,8 +23,20 @@ export default function Chat() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  async function sendMessage() {
-    const trimmed = input.trim()
+  // Listen for quick action prompts from Sidebar
+  useEffect(() => {
+    function handlePrompt(e: Event) {
+      const prompt = (e as CustomEvent<string>).detail
+      if (prompt) {
+        setInput(prompt)
+      }
+    }
+    window.addEventListener('inkflow:prompt', handlePrompt)
+    return () => window.removeEventListener('inkflow:prompt', handlePrompt)
+  }, [])
+
+  async function sendMessage(overrideInput?: string) {
+    const trimmed = (overrideInput ?? input).trim()
     if (!trimmed || loading) return
 
     const userMsg: Message = { role: 'user', content: trimmed }
@@ -117,7 +129,7 @@ export default function Chat() {
             className="flex-1 bg-transparent text-[#EDE9FF] text-sm placeholder:text-[rgba(237,233,255,0.3)] outline-none resize-none font-mono"
           />
           <button
-            onClick={sendMessage}
+            onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
             className="flex-shrink-0 w-8 h-8 rounded-lg bg-[#7B5FFF] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-[#9B83FF]"
           >
