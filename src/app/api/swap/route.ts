@@ -1,64 +1,65 @@
 // src/app/api/swap/route.ts
-// POST /api/swap — executes a token swap on Ink via SuperSwap v3
-// Uses ZeroDev smart account for gasless execution
-
 import { NextRequest, NextResponse } from 'next/server'
-import { createPublicClient, http, parseUnits, encodeFunctionData } from 'viem'
+import { parseUnits } from 'viem'
 import { z } from 'zod'
 
 const schema = z.object({
   walletAddress: z.string().startsWith('0x'),
-  fromToken: z.enum(['ETH', 'USDC', 'USDT', 'WETH']),
-  toToken: z.enum(['ETH', 'USDC', 'USDT', 'WETH']),
-  amount: z.string(), // human readable e.g. "50"
+  fromToken: z.enum(['ETH', 'USDC.e', 'USDT0', 'WETH']),
+  toToken:   z.enum(['ETH', 'USDC.e', 'USDT0', 'WETH']),
+  amount:    z.string(),
+  execute:   z.boolean().default(false), // false = preview, true = execute
+  privateKey: z.string().optional(),     // only needed when execute=true
 })
 
-// Ink Mainnet token addresses
-const TOKENS: Record<string, `0x${string}`> = {
-  USDC: '0x9151434b16b9763660705744C2C9B3B26Aa427b',
-  USDT: '0x0200C29006150606B88b00EB18cE26ef23B39a32',
-  WETH: '0x4200000000000000000000000000000000000006',
+const TOKEN_ADDRESSES: Record<string, `0x${string}`> = {
+  'USDC.e': '0xF1815bd50389c46847f0Bda824eC8da914045D14',
+  USDT0:    '0x0200C29006150606B650577BBE7B6248F58470c1',
+  WETH:     '0x4200000000000000000000000000000000000006',
 }
-
-// SuperSwap v3 router on Ink
-const SUPERSWAP_ROUTER = '0x0B0a67D2E3E97E5e5d7879B4D8B47d3e1177c8a2' as `0x${string}`
-
-const inkChain = {
-  id: 57073,
-  name: 'Ink',
-  network: 'ink',
-  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-  rpcUrls: {
-    default: { http: [process.env.NEXT_PUBLIC_INK_RPC_URL || 'https://rpc-gel.inkonchain.com'] },
-    public: { http: [process.env.NEXT_PUBLIC_INK_RPC_URL || 'https://rpc-gel.inkonchain.com'] },
-  },
-} as const
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { walletAddress, fromToken, toToken, amount } = schema.parse(body)
+    const body  = await req.json()
+    const input = schema.parse(body)
 
-    // Build the swap quote response
-    // In production this calls SuperSwap's quoter contract
-    // For now returns the transaction structure for frontend to execute
-    const amountIn = fromToken === 'ETH'
-      ? parseUnits(amount, 18)
-      : parseUnits(amount, 6) // USDC/USDT have 6 decimals
+    const decimals = input.fromToken === 'WETH' ? 18 : 6
+    const amountIn = parseUnits(input.amount, decimals)
 
-    const quote = {
-      fromToken,
-      toToken,
-      amountIn: amountIn.toString(),
-      estimatedAmountOut: (parseFloat(amount) * 0.998).toFixed(6), // 0.2% fee estimate
-      priceImpact: '0.05%',
-      route: 'SuperSwap v3',
-      gasEstimate: '0', // Sponsored by ZeroDev paymaster
-      slippage: '0.5%',
-      walletAddress,
+    // Preview mode — return quote without executing
+    if (!input.execute) {
+      return NextResponse.json({
+        ok: true,
+        quote: {
+          fromToken:            input.fromToken,
+          toToken:              input.toToken,
+          amountIn:             amountIn.toString(),
+          estimatedAmountOut:   (parseFloat(input.amount) * 0.998).toFixed(6),
+          priceImpact:          '0.05%',
+          route:                'SuperSwap v3',
+          gasEstimate:          '0',
+          slippage:             '0.5%',
+          walletAddress:        input.walletAddress,
+          tokenInAddress:       TOKEN_ADDRESSES[input.fromToken] ?? 'ETH',
+          tokenOutAddress:      TOKEN_ADDRESSES[input.toToken]   ?? 'ETH',
+        },
+      })
     }
 
-    return NextResponse.json({ ok: true, quote })
+    // Execute mode — wire to ZeroDev (active once SuperSwap address confirmed)
+    if (input.execute && input.privateKey) {
+      const { executeSwap } = await import('@/lib/execute')
+      const txHash = await executeSwap({
+        privateKey:       input.privateKey as `0x${string}`,
+        fromToken:        input.fromToken,
+        toToken:          input.toToken,
+        amountIn:         input.amount,
+        recipientAddress: input.walletAddress as `0x${string}`,
+      })
+      return NextResponse.json({ ok: true, txHash })
+    }
+
+    return NextResponse.json({ ok: false, error: 'Invalid request' }, { status: 400 })
   } catch (err: any) {
     console.error('[/api/swap]', err)
     return NextResponse.json({ ok: false, error: err.message }, { status: 500 })
