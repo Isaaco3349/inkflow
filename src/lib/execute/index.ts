@@ -16,6 +16,7 @@ import {
     type Address,
   } from 'viem'
   import { privateKeyToAccount } from 'viem/accounts'
+import { signTradeIntent, postValidationArtifact } from '@/lib/erc8004'
   
   // ── Ink Mainnet ───────────────────────────────────────────────────────────────
   export const inkChain = {
@@ -187,13 +188,23 @@ import {
     })
   
     // Send both as a batched gasless UserOperation
+    const agentKey = process.env.AGENT_PRIVATE_KEY as `0x${string}`
+    const artifact = await signTradeIntent(agentKey, {
+      action: 'swap',
+      fromToken,
+      toToken,
+      amount: amountIn,
+      protocol: 'SuperSwap',
+    })
+
     const txHash = await kernelClient.sendTransactions({
       transactions: [
         { to: tokenInAddress,                          data: approveData, value: 0n },
         { to: PROTOCOL_ADDRESSES.SUPERSWAP_ROUTER,    data: swapData,    value: 0n },
       ],
     })
-  
+
+    await postValidationArtifact(agentKey, { ...artifact, txHash: txHash as `0x${string}` })
     return txHash
   }
   
@@ -242,12 +253,22 @@ import {
       args: [tokenAddress, amountIn, recipientAddress, 0],
     })
   
+    const agentKey = process.env.AGENT_PRIVATE_KEY as `0x${string}`
+    const artifact = await signTradeIntent(agentKey, {
+      action: 'deposit',
+      fromToken: token,
+      toToken: token,
+      amount,
+      protocol: 'Aave',
+    })
+
     const txHash = await kernelClient.sendTransactions({
       transactions: [
         { to: tokenAddress,                  data: approveData, value: 0n },
         { to: PROTOCOL_ADDRESSES.AAVE_POOL, data: depositData, value: 0n },
       ],
     })
-  
+
+    await postValidationArtifact(agentKey, { ...artifact, txHash: txHash as `0x${string}` })
     return txHash
   }

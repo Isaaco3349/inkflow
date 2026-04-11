@@ -69,3 +69,20 @@ export interface BorrowPosition {
   healthFactor:      number       // <1 = liquidatable
   liquidationRisk:   "low" | "medium" | "high"
 }
+// ── ERC-8004 ────────────────────────────────────────────────────────────────
+export interface AgentIdentity {
+  agentId:       bigint
+  registryTx:    string
+  agentURI:      string
+  walletAddress: string
+}
+
+export interface TradeValidation {
+  intentHash:  string
+  signature:   string
+  agentId:     string
+  timestamp:   number
+  action:      string
+  txHash?:     string
+  verified:    boolean
+}
