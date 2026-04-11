@@ -78,6 +78,7 @@ Every DeFi action Claude executes is:
 ---
 
 ## Project Structure
+```
 inkflow/
 ├── src/
 │   ├── app/
@@ -99,6 +100,7 @@ inkflow/
 ├── scripts/
 │   └── register-agent.ts      # One-time ERC-8004 agent registration
 └── public/
+```
 
 ---
 
